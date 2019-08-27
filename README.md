@@ -1,2 +1,2 @@
 # banjo
-microservice based on rest api
+tried to use cats-effect, fs2-streams, doobie and http4s
