@@ -4,9 +4,12 @@ lazy val baseSettings = Seq(
   organization := "io.github.goal.own",
   sbtVersion := "1.2.8",
   scalacOptions ++= Seq(
+    "-feature",
+    "-unchecked",
     "-deprecation",
     "-Xfatal-warnings",
-    "-Ypartial-unification"
+    "-Ypartial-unification",
+    "-language:higherKinds"
   )
 )
 
