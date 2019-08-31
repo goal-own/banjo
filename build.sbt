@@ -1,6 +1,5 @@
 lazy val baseSettings = Seq(
   name := "banjo service",
-  version := "0.01",
   scalaVersion := "2.12.8",
   organization := "io.github.goal.own",
   sbtVersion := "1.2.8",
@@ -23,13 +22,13 @@ lazy val root = (project in file("."))
       "org.http4s" %% "http4s-blaze-server" % http4sVersion,
       "org.http4s" %% "http4s-circe" % http4sVersion,
       "org.http4s" %% "http4s-dsl" % http4sVersion,
-      "org.http4s" %% "http4s-blaze-client" % http4sVersion % "it,test",
+      "org.http4s" %% "http4s-blaze-client" % http4sVersion,
       "org.tpolecat" %% "doobie-core" % doobieVersion,
       "org.tpolecat" %% "doobie-h2" % doobieVersion,
       "org.tpolecat" %% "doobie-hikari" % doobieVersion,
       "io.circe" %% "circe-generic" % circeVersion,
-      "io.circe" %% "circe-literal" % circeVersion % "it,test",
-      "io.circe" %% "circe-optics" % circeVersion % "it",
-      "org.scalatest" %% "scalatest" % scalaTestVersion % "it,test"
+      "io.circe" %% "circe-literal" % circeVersion,
+      "io.circe" %% "circe-optics" % circeVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion
     )
   )
