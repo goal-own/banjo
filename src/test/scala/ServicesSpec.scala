@@ -5,19 +5,26 @@ import cats.syntax.all._
 class ServicesSpec extends FlatSpec with Matchers {
 
   "person service" should "raise errors in some cases" in {
-    import models.{AlreadyExistsException, NotExistsException, Person}
+    import models.{
+      User,
+      Id,
+      Username,
+      Age,
+      AlreadyExistsException,
+      NotExistsException
+    }
     import repositories.InMemoryRepository
-    import services.PersonService
+    import services.UserService
 
-    val service = PersonService[IO](new InMemoryRepository())
-    val testPerson = Person(1, "pashnik")
+    val service = UserService[IO](new InMemoryRepository())
+    val testCase = User(Id(0), Username("Pahnik98"), Age(21))
 
-    val persist = service.persist(testPerson)
-    val delete = service.delete(testPerson)
+    val persist = service.persist(testCase)
+    val delete = service.delete(testCase)
 
     the[AlreadyExistsException] thrownBy {
       (persist >> persist).unsafeRunSync()
-    } should have message (s"person: $testPerson already exists")
+    } should have message (s"user: $testCase already exists")
 
     the[NotExistsException] thrownBy {
       (delete >> delete).unsafeRunSync()

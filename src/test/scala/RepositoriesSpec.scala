@@ -6,22 +6,22 @@ class RepositoriesSpec extends FlatSpec with Matchers {
 
   "in-memory repository" should "right implement Repository methods" in {
     import repositories.InMemoryRepository
-    import repositories.Person
+    import models.{User, Id, Username, Age}
 
     val repo = new InMemoryRepository[IO]()
-    val testPerson = Person(0, "pashnik")
+    val testCase = User(Id(0), Username("Pahnik98"), Age(21))
 
     (for {
       _ <- repo
-        .find(testPerson)
-        .flatMap(person => IO(person shouldBe None))
+        .findById(testCase.id)
+        .flatMap(u => IO(u shouldBe None))
         .void
-      _ <- repo.persist(testPerson)
+      _ <- repo.persist(testCase)
       _ <- repo
-        .find(testPerson)
-        .flatMap(found => IO(found shouldBe Some(testPerson)))
+        .findByParam(testCase.username)
+        .flatMap(found => IO(found shouldBe Some(testCase)))
         .void
-      _ <- repo.delete(testPerson)
+      _ <- repo.delete(testCase)
       _ <- repo.findAll.flatMap(found => IO(found shouldBe Nil))
     } yield ()).unsafeRunSync()
   }
