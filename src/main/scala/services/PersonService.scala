@@ -2,16 +2,13 @@ package services
 
 import cats.MonadError
 import cats.syntax.all._
-import repositories.{
-  AlreadyExistsException,
-  InMemoryRepository,
-  NotExistsException,
-  Person
-}
+import models.{AlreadyExistsException, NotExistsException, Person}
+import repositories.InMemoryRepository
 
 class PersonService[F[_]](private val repo: InMemoryRepository[F])(
   implicit F: MonadError[F, Throwable]
 ) extends Service[F, Person] {
+
   override def findAll: F[List[Person]] = repo.findAll
   override def find(e: Person): F[Option[Person]] = repo.find(e)
   override def persist(e: Person): F[Unit] =

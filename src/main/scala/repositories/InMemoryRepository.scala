@@ -1,14 +1,11 @@
 package repositories
 
 import cats.effect.Sync
+import models.Person
 
 /*
 Used in test-cases instead of db
  */
-case class Person(id: Int, name: String)
-case class AlreadyExistsException(info: String) extends Exception(info)
-case class NotExistsException(info: String) extends Exception(info)
-
 class InMemoryRepository[F[_]](implicit F: Sync[F])
     extends Repository[F, Person] {
 
