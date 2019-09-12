@@ -1,6 +1,7 @@
 lazy val baseSettings = Seq(
   name := "banjo-service",
   organization := "com.hackaton.goal.own",
+  version := "0.1.0-SNAPSHOT",
   scalaVersion := "2.12.8",
   sbtVersion := "1.2.8",
   scalacOptions ++= Seq(
@@ -28,5 +29,5 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-literal" % circeVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion
-    )
+    ).map(_ withSources () withJavadoc ())
   )
