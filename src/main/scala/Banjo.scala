@@ -21,10 +21,9 @@ object Banjo extends IOApp {
   import config.Config
   override def run(args: List[String]): IO[ExitCode] =
     Config.load().flatMap { cfg =>
-      val serverCfg = cfg.server
-
+      val (port, host) = cfg.server.port -> cfg.server.host
       BlazeServerBuilder[IO]
-        .bindHttp(serverCfg.port, serverCfg.host)
+        .bindHttp(port, host)
         .withHttpApp(httpApp[IO])
         .serve
         .compile
