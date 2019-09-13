@@ -11,11 +11,13 @@ lazy val baseSettings = Seq(
     "-Xfatal-warnings",
     "-Ypartial-unification",
     "-language:higherKinds"
-  )
+  ),
+  resourceDirectory in Compile := baseDirectory.value / "resources"
 )
 
 lazy val http4sVersion = "0.20.0"
 lazy val circeVersion = "0.11.1"
+lazy val pureConfigVersion = "0.12.0"
 lazy val scalaTestVersion = "3.0.4"
 
 lazy val root = (project in file("."))
@@ -28,6 +30,7 @@ lazy val root = (project in file("."))
       "org.http4s" %% "http4s-dsl" % http4sVersion,
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-literal" % circeVersion,
-      "org.scalatest" %% "scalatest" % scalaTestVersion
+      "org.scalatest" %% "scalatest" % scalaTestVersion,
+      "com.github.pureconfig" %% "pureconfig" % pureConfigVersion
     ).map(_ withSources () withJavadoc ())
   )
