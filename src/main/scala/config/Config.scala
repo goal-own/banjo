@@ -1,8 +1,10 @@
 package config
 
-import cats.effect.IO
+import cats.MonadError
+import cats.effect.Sync
+import cats.implicits._
 import pureconfig._
-import pureconfig.generic.auto._ // necessary for auto-derivation. do not remove
+import pureconfig.generic.auto._
 import pureconfig.error.ConfigReaderException
 
 /*
@@ -16,11 +18,12 @@ case class DataBaseConfig(driver: String,
 case class BanjoConfig(server: ServerConfig, database: DataBaseConfig)
 
 object Config {
-  def load(): IO[BanjoConfig] =
-    IO(ConfigSource.default.load[BanjoConfig]).flatMap { result =>
+  def load[F[_]](implicit E: MonadError[F, Throwable],
+                 S: Sync[F]): F[BanjoConfig] =
+    S.delay(ConfigSource.default.load[BanjoConfig]).flatMap { result =>
       result.fold(
-        e => IO.raiseError(new ConfigReaderException[BanjoConfig](e)),
-        IO.pure
+        e => E.raiseError(new ConfigReaderException[BanjoConfig](e)),
+        S.pure
       )
     }
 }

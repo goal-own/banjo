@@ -19,6 +19,7 @@ lazy val http4sVersion = "0.20.0"
 lazy val circeVersion = "0.11.1"
 lazy val pureConfigVersion = "0.12.0"
 lazy val scalaTestVersion = "3.0.4"
+lazy val logbackVersion = "1.2.3"
 
 lazy val root = (project in file("."))
   .settings(
@@ -31,6 +32,7 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-literal" % circeVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion,
+      "ch.qos.logback" % "logback-classic" % logbackVersion,
       "com.github.pureconfig" %% "pureconfig" % pureConfigVersion
     ).map(_ withSources () withJavadoc ())
   )
