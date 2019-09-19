@@ -6,7 +6,6 @@ import services.UserService
 import cats.syntax.all._
 import org.http4s.dsl.Http4sDsl
 import io.circe.generic.auto._
-import org.slf4j.Logger
 
 class PersonHttpEndpoint[F[_]: Sync](userService: UserService[F])
     extends Http4sDsl[F] {

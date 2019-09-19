@@ -1,7 +1,7 @@
 package services
 
 import cats.MonadError
-import cats.syntax.all._
+import cats.syntax.flatMap._
 import models.{AlreadyExistsException, Id, NotExistsException, User, Username}
 import repositories.InMemoryRepository
 

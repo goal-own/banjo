@@ -4,7 +4,7 @@ import cats.MonadError
 import cats.effect.Sync
 import cats.implicits._
 import pureconfig._
-import pureconfig.generic.auto._
+import pureconfig.generic.auto._ // necessary for auto-derivation. do not remove
 import pureconfig.error.ConfigReaderException
 
 /*
