@@ -15,7 +15,7 @@ lazy val baseSettings = Seq(
   resourceDirectory in Compile := baseDirectory.value / "resources"
 )
 
-lazy val http4sVersion = "0.20.0"
+lazy val http4sVersion = "0.20.11"
 lazy val circeVersion = "0.11.1"
 lazy val pureConfigVersion = "0.12.0"
 lazy val scalaTestVersion = "3.0.4"
