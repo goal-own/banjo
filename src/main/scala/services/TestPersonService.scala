@@ -2,22 +2,22 @@ package services
 
 import cats.MonadError
 import cats.syntax.flatMap._
-import models.{AlreadyExistsException, Id, NotExistsException, User, Username}
+import models.{AlreadyExistsException, Id, NotExistsException, TestPerson, Username}
 import repositories.InMemoryRepository
 
-class UserService[F[_]](private val repo: InMemoryRepository[F])(
+class TestPersonService[F[_]](private val repo: InMemoryRepository[F])(
   implicit F: MonadError[F, Throwable]
-) extends Service[F, User, Username, Id] {
+) extends Service[F, TestPerson, Username, Id] {
 
-  override def findAll: F[List[User]] = repo.findAll
-  override def findByParam(e: Username): F[Option[User]] = repo.findByParam(e)
-  override def persist(e: User): F[Unit] =
+  override def findAll: F[List[TestPerson]] = repo.findAll
+  override def findByParam(e: Username): F[Option[TestPerson]] = repo.findByParam(e)
+  override def persist(e: TestPerson): F[Unit] =
     repo.findById(e.id).flatMap { maybe =>
       maybe.fold(repo.persist(e))(
         _ => F.raiseError(AlreadyExistsException(s"user: $e already exists"))
       )
     }
-  override def delete(e: User): F[Unit] =
+  override def delete(e: TestPerson): F[Unit] =
     repo
       .findById(e.id)
       .flatMap(
@@ -26,11 +26,11 @@ class UserService[F[_]](private val repo: InMemoryRepository[F])(
             F.raiseError(NotExistsException(s"person: $e not exists")) >> F.unit
           )(x => repo.delete(x))
       )
-  override def findById(id: Id): F[Option[User]] = repo.findById(id)
+  override def findById(id: Id): F[Option[TestPerson]] = repo.findById(id)
 }
 
-object UserService {
+object TestPersonService {
   def apply[F[_]](repo: InMemoryRepository[F])(
     implicit F: MonadError[F, Throwable]
-  ): UserService[F] = new UserService(repo)
+  ): TestPersonService[F] = new TestPersonService(repo)
 }

@@ -1,15 +1,16 @@
 import cats.effect.IO
 import org.scalatest.{FlatSpec, Matchers}
 import cats.implicits._
+import models.{Age, TestPerson, Username}
 
 class RepositoriesSpec extends FlatSpec with Matchers {
 
   "in-memory repository" should "right implement Repository methods" in {
+    import models.Id
     import repositories.InMemoryRepository
-    import models.{User, Id, Username, Age}
 
     val repo = new InMemoryRepository[IO]()
-    val testCase = User(Id(0), Username("Pahnik98"), Age(21))
+    val testCase = TestPerson(Id(0), Username("Pahnik98"), Age(21))
 
     (for {
       _ <- repo

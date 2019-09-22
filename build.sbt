@@ -20,6 +20,7 @@ lazy val circeVersion = "0.11.1"
 lazy val pureConfigVersion = "0.12.0"
 lazy val scalaTestVersion = "3.0.4"
 lazy val logbackVersion = "1.2.3"
+lazy val doobieVersion = "0.8.2"
 
 lazy val root = (project in file("."))
   .settings(
@@ -33,6 +34,9 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-literal" % circeVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion,
       "ch.qos.logback" % "logback-classic" % logbackVersion,
-      "com.github.pureconfig" %% "pureconfig" % pureConfigVersion
+      "com.github.pureconfig" %% "pureconfig" % pureConfigVersion,
+      "org.tpolecat" %% "doobie-core" % doobieVersion,
+      "org.tpolecat" %% "doobie-postgres" % doobieVersion,
+      "org.tpolecat" %% "doobie-specs2" % doobieVersion
     ).map(_ withSources () withJavadoc ())
   )

@@ -1,13 +1,13 @@
 package endpoints
 import cats.effect.Sync
-import models.{AlreadyExistsException, User, Username}
+import models.{AlreadyExistsException, TestPerson, Username}
 import org.http4s.HttpRoutes
-import services.UserService
+import services.TestPersonService
 import cats.syntax.all._
 import org.http4s.dsl.Http4sDsl
 import io.circe.generic.auto._
 
-class PersonHttpEndpoint[F[_]: Sync](userService: UserService[F])
+class TestPersonEndpoint[F[_]: Sync](userService: TestPersonService[F])
     extends Http4sDsl[F] {
 
   val personService: HttpRoutes[F] = HttpRoutes
@@ -18,7 +18,7 @@ class PersonHttpEndpoint[F[_]: Sync](userService: UserService[F])
           .findByParam(Username(username))
           .flatMap(_.fold(NotFound("User not found"))(Ok(_)))
       case req @ POST -> Root =>
-        req.decode[User] { user =>
+        req.decode[TestPerson] { user =>
           userService
             .persist(user)
             .flatMap(

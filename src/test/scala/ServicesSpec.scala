@@ -1,23 +1,17 @@
 import cats.effect.IO
 import org.scalatest.{FlatSpec, Matchers}
 import cats.syntax.all._
+import models.{Age, AlreadyExistsException, Id, TestPerson, Username}
 
 class ServicesSpec extends FlatSpec with Matchers {
 
   "person service" should "raise errors in some cases" in {
-    import models.{
-      User,
-      Id,
-      Username,
-      Age,
-      AlreadyExistsException,
-      NotExistsException
-    }
+    import models.NotExistsException
     import repositories.InMemoryRepository
-    import services.UserService
+    import services.TestPersonService
 
-    val service = UserService[IO](new InMemoryRepository())
-    val testCase = User(Id(0), Username("Pahnik98"), Age(21))
+    val service = TestPersonService[IO](new InMemoryRepository())
+    val testCase = TestPerson(Id(0), Username("Pahnik98"), Age(21))
 
     val persist = service.persist(testCase)
     val delete = service.delete(testCase)
