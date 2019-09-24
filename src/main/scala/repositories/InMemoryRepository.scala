@@ -1,5 +1,6 @@
 package repositories
 
+import cats.syntax.functor._
 import cats.effect.Sync
 import models.{Id, TestPerson, Username}
 
@@ -16,6 +17,8 @@ class InMemoryRepository[F[_]](implicit F: Sync[F])
     F.delay(store.find(_.id == id))
   override def findByParam(param: Username): F[Option[TestPerson]] =
     F.delay(store.find(_.username == param))
-  override def persist(e: TestPerson): F[Unit] = F.delay(store += e)
-  override def delete(e: TestPerson): F[Unit] = F.delay(store -= e)
+  override def persist(e: TestPerson): F[Int] = F.delay(store += e).map(_ => 1)
+  override def delete(e: TestPerson): F[Int] = F.delay(store -= e).map(_ => 1)
+
+  override def update: F[Int] = ??? // TODO
 }

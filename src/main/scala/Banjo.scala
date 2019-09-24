@@ -15,7 +15,10 @@ object Banjo extends IOApp {
   implicit val logger: Logger = getLogger(getClass.getName)
 
   def httpApp[F[_]: Sync]: Kleisli[F, Request[F], Response[F]] =
-    Router("/test" -> EndpointsRouter.testEndpoint).orNotFound
+    Router(
+      "/test" -> EndpointsRouter.testEndpoint,
+      "/session" -> EndpointsRouter.testEndpoint
+    ).orNotFound
 
   def stream[F[_]: Sync](implicit E: ConcurrentEffect[F],
                          T: Timer[F]): Stream[F, Unit] =

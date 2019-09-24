@@ -13,4 +13,7 @@ object EndpointsRouter {
 
   def testEndpoint[F[_]: Sync]: HttpRoutes[F] =
     new TestPersonEndpoint[F](new TestPersonService(new InMemoryRepository())).personService
+
+  def sessionEndpoint[F[_]: Sync]: HttpRoutes[F] =
+    ???
 }

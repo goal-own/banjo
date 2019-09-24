@@ -3,7 +3,8 @@ import cats.effect.Sync
 import models.{AlreadyExistsException, TestPerson, Username}
 import org.http4s.HttpRoutes
 import services.TestPersonService
-import cats.syntax.all._
+import cats.syntax.applicativeError._
+import cats.syntax.flatMap._
 import org.http4s.dsl.Http4sDsl
 import io.circe.generic.auto._
 
