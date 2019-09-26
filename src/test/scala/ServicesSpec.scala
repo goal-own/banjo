@@ -1,7 +1,7 @@
 import cats.effect.IO
 import org.scalatest.{FlatSpec, Matchers}
 import cats.syntax.all._
-import models.{Age, AlreadyExistsException, Id, TestPerson, Username}
+import models.{Age, AlreadyExistsException, PersonId, TestPerson, Username}
 
 class ServicesSpec extends FlatSpec with Matchers {
 
@@ -11,7 +11,7 @@ class ServicesSpec extends FlatSpec with Matchers {
     import services.TestPersonService
 
     val service = TestPersonService[IO](new InMemoryRepository())
-    val testCase = TestPerson(Id(0), Username("Pahnik98"), Age(21))
+    val testCase = TestPerson(PersonId(0), Username("Pahnik98"), Age(21))
 
     val persist = service.persist(testCase)
     val delete = service.delete(testCase)

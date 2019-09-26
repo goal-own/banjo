@@ -3,7 +3,6 @@ package repositories
 import cats.effect.Effect
 import doobie.util.transactor.Transactor
 import models.SessionModel._
-import doobie.syntax._
 import doobie.implicits._
 
 class SessionRepository[F[_]: Effect](transactor: Transactor[F])
@@ -28,7 +27,7 @@ class SessionRepository[F[_]: Effect](transactor: Transactor[F])
       .transact(transactor)
 
   override def persist(e: Session): F[Int] =
-    sql"INSERT into public.session (user_id, token, session_id) VALUES (${e.userId.id} , ${e.token.accessToken}, ${e.sessionId.id})".update.run
+    sql"INSERT into public.session (user_id, token, session_id) VALUES (${e.userId.id} , ${e.token.accessToken}, ${e.sessionId.id.toString})".update.run
       .transact(transactor)
 
   override def delete(e: Session): F[Int] =

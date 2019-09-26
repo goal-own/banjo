@@ -3,26 +3,51 @@ package endpoints
 import java.util.UUID
 
 import cats.effect.Sync
-import models.SessionModel.{Session, SessionId, Token}
+import models.SessionModel.{Session, SessionId, Token, UserId}
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 import cats.syntax.flatMap._
 import services.SessionService
+import io.circe.generic.auto._
+
+import scala.util.Try
 
 class SessionEndpoint[F[_]: Sync](sessionService: SessionService[F])
     extends Http4sDsl[F] {
 
   object TokenMatcher extends OptionalQueryParamDecoderMatcher[String]("token")
-  object UserId extends OptionalQueryParamDecoderMatcher[Int]("userId")
+  object UserIdMatcher
+      extends OptionalQueryParamDecoderMatcher[String]("user_id")
+
   val sessionRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
-    case GET -> Root / "session" ?: TokenMatcher(token) & UserId(id) =>
+    case GET -> Root / "session" :? TokenMatcher(token) +& UserIdMatcher(
+          userId
+        ) =>
       token.fold(BadRequest("token was not sent")) { token =>
-        sessionService.findByParam(Token(token)).flatMap {
-          case Some(session) =>
-            BadRequest(s"this token : ${session.token} is actually used!")
-          case None => ???
-        }
-        Ok()
+        userId.fold(BadRequest("userId was not sent"))(
+          u =>
+            Try(u.toInt).toOption.fold(BadRequest("userId has wrong format"))(
+              userId =>
+                sessionService.findById(UserId(userId)).flatMap {
+                  case Some(s) =>
+                    sessionService
+                      .update(s.copy(token = Token(token))) >> Ok(s.sessionId)
+                  case None =>
+                    Sync[F]
+                      .delay { UUID.randomUUID() }
+                      .flatMap { uuid =>
+                        sessionService
+                          .persist(
+                            Session(
+                              userId = UserId(userId),
+                              token = Token(token),
+                              sessionId = SessionId(uuid)
+                            )
+                          ) >> Ok() // should be uuid
+                      }
+              }
+          )
+        )
       }
   }
 }
