@@ -1,9 +1,11 @@
 package endpoints
 
-import cats.effect.Sync
+import cats.effect.{Effect, Sync}
+import doobie.util.transactor.Transactor
 import org.http4s.HttpRoutes
-import repositories.InMemoryRepository
-import services.TestPersonService
+import org.log4s.Logger
+import repositories.{InMemoryRepository, SessionRepository}
+import services.{SessionService, TestPersonService}
 
 /*
 Creating instances for repositories and services
@@ -14,6 +16,8 @@ object EndpointsRouter {
   def testEndpoint[F[_]: Sync]: HttpRoutes[F] =
     new TestPersonEndpoint[F](new TestPersonService(new InMemoryRepository())).personService
 
-  def sessionEndpoint[F[_]: Sync]: HttpRoutes[F] =
-    ???
+  def sessionEndpoint[F[_]: Effect](
+    tr: Transactor[F]
+  )(implicit logger: Logger): HttpRoutes[F] =
+    new SessionEndpoint[F](new SessionService(new SessionRepository(tr))).sessionRoutes
 }

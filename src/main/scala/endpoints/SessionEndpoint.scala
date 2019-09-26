@@ -4,7 +4,7 @@ import java.util.UUID
 
 import cats.effect.Sync
 import models.SessionModel.{Session, SessionId, Token, UserId}
-import org.http4s.HttpRoutes
+import org.http4s.{HttpRoutes, Response}
 import org.http4s.dsl.Http4sDsl
 import cats.syntax.flatMap._
 import services.SessionService
@@ -31,7 +31,8 @@ class SessionEndpoint[F[_]: Sync](sessionService: SessionService[F])
                 sessionService.findById(UserId(userId)).flatMap {
                   case Some(s) =>
                     sessionService
-                      .update(s.copy(token = Token(token))) >> Ok(s.sessionId)
+                      .update(s.copy(token = Token(token)))
+                      .flatMap(result)
                   case None =>
                     Sync[F]
                       .delay { UUID.randomUUID() }
@@ -43,11 +44,19 @@ class SessionEndpoint[F[_]: Sync](sessionService: SessionService[F])
                               token = Token(token),
                               sessionId = SessionId(uuid)
                             )
-                          ) >> Ok() // should be uuid
+                          )
+                          .flatMap(result) // should be uuid
                       }
               }
           )
         )
       }
+  }
+
+  private def result(res: Either[Throwable, Session]): F[Response[F]] = {
+    res match {
+      case Right(value) => Ok(value.sessionId)
+      case Left(_)      => BadRequest() // TODO
+    }
   }
 }

@@ -1,12 +1,12 @@
 package endpoints
 import cats.effect.Sync
-import models.{AlreadyExistsException, TestPerson, Username}
 import org.http4s.HttpRoutes
-import services.TestPersonService
+import services.{AlreadyExistsException, TestPersonService}
 import cats.syntax.applicativeError._
 import cats.syntax.flatMap._
 import org.http4s.dsl.Http4sDsl
 import io.circe.generic.auto._
+import models.{TestPerson, Username}
 
 class TestPersonEndpoint[F[_]: Sync](userService: TestPersonService[F])
     extends Http4sDsl[F] {

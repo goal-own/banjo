@@ -10,6 +10,7 @@ object SessionModel {
   case class UserId(id: Int) extends AnyVal
   case class Token(accessToken: String) extends AnyVal
 
+  // chane to using meta TODO
   implicit val sessionIdGet: Get[SessionId] =
     Get[String].map(v => SessionId(UUID.fromString(v)))
   implicit val sessionIdPut: Put[SessionId] =
