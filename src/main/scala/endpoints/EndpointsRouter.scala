@@ -13,7 +13,7 @@ Combining http endpoints together
  */
 object EndpointsRouter {
 
-  def testEndpoint[F[_]: Sync]: HttpRoutes[F] =
+  def testEndpoint[F[_]: Sync](implicit logger: Logger): HttpRoutes[F] =
     new TestPersonEndpoint[F](new TestPersonService(new InMemoryRepository())).personService
 
   def sessionEndpoint[F[_]: Effect](

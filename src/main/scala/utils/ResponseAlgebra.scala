@@ -1,9 +1,7 @@
 package utils
 
-class ResponseAlgebra {
-  sealed trait ErrorCode
-  case class NotValidToken(code: Int = 1) extends ErrorCode
-  case class Fine(code: Int = 0) extends ErrorCode
+sealed trait ErrorCode { val code: Int }
+object NotValidToken extends ErrorCode { val code = 1 }
+object Fine extends ErrorCode { val code = 0 }
 
-  case class Response[T](data: Option[T], errorCode: ErrorCode)
-}
+case class Resp[T](data: Option[T], errorCode: Int)

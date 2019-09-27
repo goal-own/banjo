@@ -27,7 +27,7 @@ class SessionRepository[F[_]: Effect](transactor: Transactor[F])
       .transact(transactor)
 
   override def persist(e: Session): F[Int] =
-    sql"INSERT into public.session (user_id, token, session_id) VALUES (${e.userId.id} , ${e.token.accessToken}, ${e.sessionId.id.toString})".update.run
+    sql"INSERT into public.session (user_id, token, session_id) VALUES (${e.userId.id} , ${e.token.accessToken}, ${e.sessionId.sessionId.toString})".update.run
       .transact(transactor)
 
   override def delete(e: Session): F[Int] =
@@ -35,6 +35,6 @@ class SessionRepository[F[_]: Effect](transactor: Transactor[F])
       .transact(transactor)
 
   override def update(e: Session): F[Int] =
-    sql"UPDATE public.session SET session_id = ${e.sessionId}, token = ${e.token}, user_id = ${e.userId}".update.run
+    sql"UPDATE public.session SET token = ${e.token} WHERE user_id = ${e.userId}".update.run
       .transact(transactor)
 }

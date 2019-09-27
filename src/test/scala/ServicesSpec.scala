@@ -1,12 +1,12 @@
 import cats.effect.IO
 import org.scalatest.{FlatSpec, Matchers}
 import cats.syntax.all._
-import models.{Age, AlreadyExistsException, PersonId, TestPerson, Username}
+import models.{Age, PersonId, TestPerson, Username}
+import services.{AlreadyExistsException, NotExistsException}
 
 class ServicesSpec extends FlatSpec with Matchers {
 
   "person service" should "raise errors in some cases" in {
-    import models.NotExistsException
     import repositories.InMemoryRepository
     import services.TestPersonService
 

@@ -7,13 +7,23 @@ import cats.syntax.flatMap._
 import org.http4s.dsl.Http4sDsl
 import io.circe.generic.auto._
 import models.{TestPerson, Username}
+import org.log4s.Logger
 
-class TestPersonEndpoint[F[_]: Sync](userService: TestPersonService[F])
-    extends Http4sDsl[F] {
+class TestPersonEndpoint[F[_]: Sync](userService: TestPersonService[F])(
+  implicit logger: Logger
+) extends Http4sDsl[F] {
+
+  object TokenMatcher extends OptionalQueryParamDecoderMatcher[String]("a")
+  object UserIdMatcher extends OptionalQueryParamDecoderMatcher[String]("b")
 
   val personService: HttpRoutes[F] = HttpRoutes
     .of[F] {
       case GET -> Root => Ok(userService.findAll)
+      case GET -> Root / "a" :? TokenMatcher(a) +& UserIdMatcher (
+            userId
+          ) =>
+        logger.info("Pisdez" + a + userId)
+        Ok()
       case GET -> Root / username =>
         userService
           .findByParam(Username(username))

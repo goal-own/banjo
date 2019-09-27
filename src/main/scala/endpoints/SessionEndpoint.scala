@@ -9,6 +9,7 @@ import org.http4s.dsl.Http4sDsl
 import cats.syntax.flatMap._
 import services.SessionService
 import io.circe.generic.auto._
+import utils.{Fine, Resp}
 
 import scala.util.Try
 
@@ -16,13 +17,12 @@ class SessionEndpoint[F[_]: Sync](sessionService: SessionService[F])
     extends Http4sDsl[F] {
 
   object TokenMatcher extends OptionalQueryParamDecoderMatcher[String]("token")
+
   object UserIdMatcher
       extends OptionalQueryParamDecoderMatcher[String]("user_id")
 
   val sessionRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
-    case GET -> Root / "session" :? TokenMatcher(token) +& UserIdMatcher(
-          userId
-        ) =>
+    case GET -> Root :? TokenMatcher(token) +& UserIdMatcher(userId) =>
       token.fold(BadRequest("token was not sent")) { token =>
         userId.fold(BadRequest("userId was not sent"))(
           u =>
@@ -45,7 +45,7 @@ class SessionEndpoint[F[_]: Sync](sessionService: SessionService[F])
                               sessionId = SessionId(uuid)
                             )
                           )
-                          .flatMap(result) // should be uuid
+                          .flatMap(result)
                       }
               }
           )
@@ -55,7 +55,7 @@ class SessionEndpoint[F[_]: Sync](sessionService: SessionService[F])
 
   private def result(res: Either[Throwable, Session]): F[Response[F]] = {
     res match {
-      case Right(value) => Ok(value.sessionId)
+      case Right(value) => Ok(Resp(Some(value.sessionId), Fine.code))
       case Left(_)      => BadRequest() // TODO
     }
   }
