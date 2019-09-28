@@ -37,4 +37,10 @@ class SessionRepository[F[_]: Effect](transactor: Transactor[F])
   override def update(e: Session): F[Int] =
     sql"UPDATE public.session SET token = ${e.token} WHERE user_id = ${e.userId}".update.run
       .transact(transactor)
+
+  def validate(e: SessionId): F[Option[SessionId]] =
+    sql"SELECT session.session_id FROM public.session WHERE session_id = ${e.sessionId.toString}"
+      .query[SessionId]
+      .option
+      .transact(transactor)
 }

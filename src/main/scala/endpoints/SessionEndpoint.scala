@@ -9,7 +9,7 @@ import org.http4s.dsl.Http4sDsl
 import cats.syntax.flatMap._
 import services.SessionService
 import io.circe.generic.auto._
-import utils.{Fine, Resp}
+import utils.{Fine, NotValidSession, Resp}
 
 import scala.util.Try
 
@@ -19,6 +19,8 @@ class SessionEndpoint[F[_]: Sync](sessionService: SessionService[F])
   object TokenMatcher extends OptionalQueryParamDecoderMatcher[String]("token")
   object UserIdMatcher
       extends OptionalQueryParamDecoderMatcher[String]("user_id")
+  object SessionIdMatcher
+      extends OptionalQueryParamDecoderMatcher[String]("session_id")
 
   val sessionRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root :? TokenMatcher(token) +& UserIdMatcher(userId) =>
@@ -49,6 +51,16 @@ class SessionEndpoint[F[_]: Sync](sessionService: SessionService[F])
               }
           )
         )
+      }
+    case GET -> Root / "validate" :? SessionIdMatcher(sessionId) =>
+      sessionId.flatMap(str => Try(UUID.fromString(str)).toOption) match {
+        case None => BadRequest("not correct sessionId")
+        case Some(sessionId) =>
+          sessionService.validateSession(SessionId(sessionId)).flatMap {
+            _.fold(BadRequest(Resp(Some(false), NotValidSession.code)))(
+              _ => Ok(Resp(Some(true), Fine.code))
+            )
+          }
       }
   }
 

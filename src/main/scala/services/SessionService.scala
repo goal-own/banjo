@@ -2,7 +2,7 @@ package services
 
 import cats.effect.Sync
 import cats.syntax.flatMap._
-import models.SessionModel.{Session, Token, UserId}
+import models.SessionModel.{Session, SessionId, Token, UserId}
 import repositories.SessionRepository
 import org.log4s.Logger
 
@@ -46,4 +46,8 @@ class SessionService[F[_]: Sync](private val repo: SessionRepository[F])(
       case None =>
         Sync[F].delay(Left(NotExistsException(s"session: $e not exists")))
     }
+
+  def validateSession(session: SessionId): F[Option[SessionId]] = {
+    repo.validate(session)
+  }
 }
