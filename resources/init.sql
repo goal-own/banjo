@@ -13,6 +13,6 @@ CREATE TABLE IF NOT EXISTS public.stories
 (
     session_id VARCHAR(256),
     stories    VARCHAR NOT NULL,
-    PRIMARY KEY (session_Id)
+    PRIMARY KEY (session_id)
 )
 ;

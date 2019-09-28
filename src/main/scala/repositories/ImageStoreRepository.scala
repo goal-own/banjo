@@ -16,4 +16,10 @@ class ImageStoreRepository[F[_]: Effect](transactor: Transactor[F]) {
   def persistStories(stories: Stories): F[Int] =
     sql"INSERT INTO public.stories (session_id, stories) VALUES (${stories.sessionId}, ${stories.path.value})".update.run
       .transact(transactor)
+
+  def findAllStories: F[List[Stories]] =
+    sql"SELECT * FROM public.stories"
+      .query[Stories]
+      .to[List]
+      .transact(transactor)
 }

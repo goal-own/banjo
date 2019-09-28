@@ -34,6 +34,8 @@ class ImageService[F[_]: Sync](repo: ImageStoreRepository[F], blocker: Blocker)(
     }
   }
 
+  def findAll(e: SessionId): F[List[Stories]] = repo.findAllStories
+
   def findStories(s: SessionId): F[Option[StoriesPath]] =
     repo.findStories(s)
 

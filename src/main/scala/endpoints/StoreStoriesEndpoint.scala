@@ -13,6 +13,8 @@ import org.http4s.headers._
 import org.log4s.Logger
 import services.ImageService
 import io.circe.generic.auto._
+import mock.InitFriends
+import models.StoriesResponse
 import utils.{Fine, Resp}
 
 import scala.util.Try
@@ -57,20 +59,19 @@ class StoreStoriesEndpoint[F[_]: Sync: ContextShift](
         case Some(id) =>
           Try(UUID.fromString(id)).toOption match {
             case None => BadRequest("session_id has wrong format")
-            case Some(value) =>
-              imageService.findStories(SessionId(value)).flatMap {
-                case Some(url) =>
-                  Ok {
-                    Resp(
-                      Some(
-                        "95.213.39.140" + ":" + serverConfig.port + "/media" + "/get_image?path=" + url.value
-                      ) // hardcode
-                      ,
-                      Fine.code
+            case Some(s) =>
+              Ok(imageService.findAll(SessionId(s)).map { x =>
+                x.zipWithIndex.map {
+                  case (stories, id) =>
+                    val (name, surname) = InitFriends.friends(id)
+                    StoriesResponse(
+                      1,
+                      name,
+                      surname,
+                      "95.213.39.140" + ":" + serverConfig.port + "/media" + "/get_image?path=" + stories.path.value + ".jpg"
                     )
-                  }
-                case None => BadRequest("don't have these session")
-              }
+                }
+              })
           }
       }
 
