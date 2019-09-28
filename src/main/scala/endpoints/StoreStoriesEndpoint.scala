@@ -13,6 +13,7 @@ import org.http4s.headers._
 import org.log4s.Logger
 import services.ImageService
 import io.circe.generic.auto._
+import utils.{Fine, Resp}
 
 import scala.util.Try
 
@@ -60,7 +61,13 @@ class StoreStoriesEndpoint[F[_]: Sync: ContextShift](
               imageService.findStories(SessionId(value)).flatMap {
                 case Some(url) =>
                   Ok {
-                    serverConfig.host + ":" + serverConfig.port + "/media" + "/get_image?path=" + url.value
+                    Resp(
+                      Some(
+                        "95.213.39.140" + ":" + serverConfig.port + "/media" + "/get_image?path=" + url.value
+                      ) // hardcode
+                      ,
+                      Fine.code
+                    )
                   }
                 case None => BadRequest("don't have these session")
               }
@@ -68,7 +75,6 @@ class StoreStoriesEndpoint[F[_]: Sync: ContextShift](
       }
 
     case GET -> Root / "get_image" :? PathMatcher(path) =>
-      logger.info(s"$path")
       StaticFile
         .fromString(path, blocker.blockingContext)
         .getOrElseF(NotFound("File not found"))
