@@ -12,7 +12,7 @@ class StoreStoriesEndpoint[F[_]: Sync](implicit logger: Logger)
 
   val storeStoriesEndpoint: HttpRoutes[F] = HttpRoutes.of[F] {
     case req @ POST -> Root / "test" =>
-      Ok(req.body.compile.toVector)
-        .map(_.putHeaders(`Content-Type`(MediaType.text.plain)))
+      Ok(req.body.chunks)
+        .map(_.putHeaders(`Content-Type`(MediaType.image.jpeg)))
   }
 }
