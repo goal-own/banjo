@@ -7,7 +7,9 @@ import models.SessionModel.SessionId
 import repositories.ImageStoreRepository
 import cats.syntax.flatMap._
 import fs2._
-import models.{Stories, StoriesPath}
+import models.{Stories, StoriesId, StoriesPath}
+
+import scala.util.Random
 
 class InitFriends[F[_]: Sync](imageRepository: ImageStoreRepository[F]) {
   private val imagePaths =
@@ -25,7 +27,9 @@ class InitFriends[F[_]: Sync](imageRepository: ImageStoreRepository[F]) {
           .covary[F]
           .evalMap { path =>
             generateSessionId.flatMap { x =>
-              imageRepository.persistStories(Stories(x, StoriesPath(path)))
+              imageRepository.persistStories(
+                Stories(StoriesId(Random.nextInt()), x, StoriesPath(path))
+              )
             }
           }
           .compile // very bad

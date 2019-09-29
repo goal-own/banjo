@@ -7,10 +7,12 @@ import cats.effect.{Blocker, ContextShift, ExitCode, Sync}
 import models.SessionModel.SessionId
 import cats.syntax.flatMap._
 import cats.syntax.functor._
-import models.{Stories, StoriesPath}
+import models.{Stories, StoriesId, StoriesPath}
 import org.log4s.Logger
 import fs2._
 import repositories.ImageStoreRepository
+
+import scala.util.Random
 
 class ImageService[F[_]: Sync](repo: ImageStoreRepository[F], blocker: Blocker)(
   implicit logger: Logger,
@@ -25,7 +27,7 @@ class ImageService[F[_]: Sync](repo: ImageStoreRepository[F], blocker: Blocker)(
     }
 
   def persist(s: Stories): F[Either[Throwable, Stories]] = {
-    repo.findStories(s.sessionId).flatMap {
+    repo.findStories(s.storiesId).flatMap {
       case Some(_) =>
         Sync[F]
           .delay(Left(AlreadyExistsException(s"session: $s already exists")))
@@ -36,7 +38,7 @@ class ImageService[F[_]: Sync](repo: ImageStoreRepository[F], blocker: Blocker)(
 
   def findAll(e: SessionId): F[List[Stories]] = repo.findAllStories
 
-  def findStories(s: SessionId): F[Option[StoriesPath]] =
+  def findStories(s: StoriesId): F[Option[StoriesPath]] =
     repo.findStories(s)
 
   def saveImage(sessionId: SessionId, stream: Stream[F, Byte]): F[ExitCode] = {
@@ -45,7 +47,15 @@ class ImageService[F[_]: Sync](repo: ImageStoreRepository[F], blocker: Blocker)(
       .flatMap { file =>
         val savePathDb =
           Stream
-            .eval(persist(Stories(sessionId, StoriesPath(file.toString))))
+            .eval(
+              persist(
+                Stories(
+                  StoriesId(Random.nextInt()),
+                  sessionId,
+                  StoriesPath(file.toString)
+                )
+              )
+            ) // test
             .rethrow // very bad should think about it!!
         val saveImage =
           stream.through(io.file.writeAll(file, blocker))

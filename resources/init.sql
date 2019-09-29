@@ -11,8 +11,9 @@ CREATE TABLE IF NOT EXISTS public.session
 
 CREATE TABLE IF NOT EXISTS public.stories
 (
+    stories_id BIGINT,
     session_id VARCHAR(256),
     stories    VARCHAR NOT NULL,
-    PRIMARY KEY (session_id)
+    PRIMARY KEY (stories_id)
 )
 ;
