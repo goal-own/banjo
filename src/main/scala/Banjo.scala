@@ -12,6 +12,7 @@ import cats.effect.{
 }
 import endpoints.EndpointsRouter
 import cats.implicits.toFunctorOps
+import client.ClientTest
 import org.http4s.{Request, Response}
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -23,7 +24,10 @@ import doobie.util.transactor.Transactor
 import utils.StreamUtils._
 import fs2._
 import mock.InitFriends
+import org.http4s.client.blaze.BlazeClientBuilder
 import repositories.ImageStoreRepository
+
+import scala.concurrent.ExecutionContext
 
 object Banjo extends IOApp {
   implicit val logger: Logger = getLogger(getClass.getName)
@@ -51,6 +55,10 @@ object Banjo extends IOApp {
       (port, host) = cfg.server.port -> cfg.server.host
       blocker <- Stream.resource(Blocker[F])
       transactor <- evalF(Database.transactor(cfg.database, blocker))
+      client <- Stream.resource(
+        BlazeClientBuilder[F](ExecutionContext.global).resource
+      )
+      _ <- Stream.emit(new ClientTest[F](client).makeRequest)
       _ <- eval(
         new InitFriends[F](new ImageStoreRepository[F](transactor)).init
       )
